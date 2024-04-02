@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         TimePicker tp = findViewById(R.id.timePicker);
         Button setAlarm = findViewById(R.id.buttonSetAlarm);
         Spinner frequencySpinner = findViewById(R.id.frequencySpinner);
+        frequencySpinner.setBackgroundColor(Color.WHITE);
 
         List<String> options = new ArrayList<>();
         options.add("Select Frequency");
@@ -45,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
                 TextView textView = (TextView) view;
                 if (position == 0) { // Hint's position
                     textView.setText(getItem(position));
-                    textView.setTextColor(Color.WHITE);
+                    textView.setTextColor(Color.BLACK);
                 } else {
-                    textView.setTextColor(Color.WHITE);
+                    textView.setTextColor(Color.BLACK);
                 }
                 return view;
             }
