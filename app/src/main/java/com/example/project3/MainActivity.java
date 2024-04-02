@@ -92,49 +92,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        public void start_Sensing_new(int frequency){
-            Log.d("MyActivity", "Alarm On. Frequency = " + frequency);
-            Calendar calendar = Calendar.getInstance();
-            long currentTime = System.currentTimeMillis();
-            calendar.setTimeInMillis(currentTime);
 
-            Intent intent = new Intent(this, SendNotification.class);
-            intent.putExtra("frequency", frequency);
-            PendingIntent pendingIntent = null;
-
-            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-            AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-
-            long frequencyMillis;
-            frequencyMillis = frequency*60*1000;
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), frequencyMillis, pendingIntent);
-        }
-
-
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            Calendar c=Calendar.getInstance();
-
-            int hr = tp.getHour();
-            int m = tp.getMinute();
-
-
-            c.set(Calendar.HOUR_OF_DAY,hr);
-            c.set(Calendar.MINUTE,m);
-        // Add logic to set date of the calendar object and get time in milliseconds
-        // like we did earlier for setting the alarm
-        }
 
         CalendarView calView = findViewById(R.id.calendarView);
         calView.setBackgroundColor(Color.WHITE);
         Calendar cal = Calendar.getInstance();
         long alarmTimeInMillis = cal.getTimeInMillis();
-
-
-        int curDay = cal.get(Calendar.DAY_OF_MONTH);
-        int curYear = cal.get(Calendar.YEAR);
-        int curMonth = cal.get(Calendar.MONTH);
 
         calView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -145,7 +108,11 @@ public class MainActivity extends AppCompatActivity {
         setAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Ensure the calendar is set to the selected date and t
 
+                start_Sensing_new(selectedFrequency, cal);
+
+                // Show a toast message to indicate the alarm is set
                 Toast.makeText(MainActivity.this, "Alarm has been updated", Toast.LENGTH_SHORT).show();
             }
         });
@@ -158,5 +125,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         }
+
+    public void start_Sensing_new(int frequency, Calendar cal){
+        Log.d("MyActivity", "Alarm On. Frequency = " + frequency);
+        long currentTime = cal.getTimeInMillis();
+
+        Intent intent = new Intent(this, SendNotification.class);
+        intent.putExtra("frequency", frequency);
+        intent.putExtra("Calendar", cal);
+        PendingIntent pendingIntent = null;
+
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+
+        long frequencyMillis;
+        frequencyMillis = frequency*60*1000;
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, currentTime, frequencyMillis, pendingIntent);
+    }
 
     }
