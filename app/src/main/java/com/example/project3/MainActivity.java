@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView textView = (TextView) view;
                 if (position == 0) { // Hint's position
                     textView.setText(getItem(position));
-                    textView.setTextColor(Color.BLACK);
+                    textView.setTextColor(Color.GRAY);
                 } else {
                     textView.setTextColor(Color.BLACK);
                 }
