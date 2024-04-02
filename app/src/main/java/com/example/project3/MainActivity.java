@@ -1,5 +1,6 @@
 package com.example.project3;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -92,5 +94,22 @@ public class MainActivity extends AppCompatActivity {
         // like we did earlier for setting the alarm
         }
 
+        CalendarView calView = findViewById(R.id.calendarView);
+        calView.setBackgroundColor(Color.WHITE);
+        Calendar cal = Calendar.getInstance();
+
+
+        int curDay = cal.get(Calendar.DAY_OF_MONTH);
+        int curYear = cal.get(Calendar.YEAR);
+        int curMonth = cal.get(Calendar.MONTH);
+
+        calView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                cal.set(year, month, dayOfMonth);     // updating date in calendar
+            }
+        });
+
+        }
+
     }
-}
