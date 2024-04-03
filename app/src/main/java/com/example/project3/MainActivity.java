@@ -25,18 +25,20 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private int selectedFrequency;
     private static final String PREFS_NAME = "AlarmPrefs";
     private static final String ALARM_TIME_KEY = "alarmTime";
     private static final String ALARM_FREQUENCY_KEY = "alarmFrequency";
+    private TextView textViewDuration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        textViewDuration = findViewById(R.id.textViewDuration);
         TimePicker tp = findViewById(R.id.timePicker);
         Button setAlarm = findViewById(R.id.buttonSetAlarm);
         Button deleteAlarm = findViewById(R.id.buttonDeleteAlarm);
@@ -134,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.putLong(ALARM_TIME_KEY, cal.getTimeInMillis());
                 editor.putInt(ALARM_FREQUENCY_KEY, selectedFrequency);
                 editor.apply();
-
+                updateDurationMessage();
                 Toast.makeText(MainActivity.this, "Alarm has been set", Toast.LENGTH_SHORT).show();
             }
         });
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.remove(ALARM_TIME_KEY);
                 editor.remove(ALARM_FREQUENCY_KEY);
                 editor.apply();
-
+                updateDurationMessage();
                 Toast.makeText(MainActivity.this, "Alarm has been canceled", Toast.LENGTH_SHORT).show();
             }
         });
@@ -164,8 +166,31 @@ public class MainActivity extends AppCompatActivity {
             alarmCal.setTimeInMillis(alarmTime);
             startSensing(alarmFrequency, alarmCal);
         }
-    }
 
+        updateDurationMessage();
+    }
+    private void updateDurationMessage() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        long alarmTime = prefs.getLong(ALARM_TIME_KEY, 0);
+        int alarmFrequency = prefs.getInt(ALARM_FREQUENCY_KEY, 0);
+
+        if (alarmTime > 0 && alarmFrequency > 0) {
+            long currentTime = System.currentTimeMillis();
+            long nextAlarmTime = alarmTime;
+
+            while (nextAlarmTime < currentTime) {
+                nextAlarmTime += alarmFrequency * 60 * 1000;
+            }
+
+            long durationMillis = nextAlarmTime - currentTime;
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
+
+            String message = "The next alarm will go live in " + minutes + " minutes.";
+            textViewDuration.setText(message);
+        } else {
+            textViewDuration.setText("No upcoming alarm");
+        }
+    }
     public void startSensing(int frequency, Calendar cal) {
         Log.d("MyActivity", "Alarm Set. Frequency: " + frequency + ", Time: " + cal.getTime());
         long alarmTime = cal.getTimeInMillis();

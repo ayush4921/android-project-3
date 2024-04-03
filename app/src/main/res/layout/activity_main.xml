@@ -11,11 +11,25 @@
         android:layout_width="454dp"
         android:layout_height="779dp"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@+id/timePicker"
-        app:layout_constraintTop_toBottomOf="@+id/timePicker"
-        app:layout_constraintVertical_bias="0.53"
-        app:srcCompat="@drawable/_9f7666440ceb4efe41223601648de5d"
-        tools:layout_editor_absoluteX="-22dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.312"
+        app:srcCompat="@drawable/_9f7666440ceb4efe41223601648de5d" />
+
+    <TextView
+        android:id="@+id/textViewDuration"
+        android:layout_width="129dp"
+        android:layout_height="46dp"
+        android:text="No upcoming alarm"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonDeleteAlarm"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TimePicker
         android:id="@+id/timePicker"
@@ -23,11 +37,10 @@
         android:layout_height="wrap_content"
         android:amPmBackgroundColor="#2196F3"
         android:amPmTextColor="#9C27B0"
-        android:background="#003F51B5"
+        android:background="#00DADADA"
         android:backgroundTint="#3F51B5"
-        android:numbersSelectorColor="#989DA2"
+        android:numbersSelectorColor="#488FD5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,7 +52,6 @@
         android:backgroundTint="#FFFFFF"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/timePicker" />
 
