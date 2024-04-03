@@ -12,7 +12,6 @@ import androidx.core.app.NotificationCompat;
 public class SendNotification extends BroadcastReceiver {
     public static final String NOTIFICATION_CHANNEL_ID = "10001" ;
     private final static String default_notification_channel_id = "default" ;
-
     public static final String CHANNEL_ID = "Channel1";
     public static String NOTIFICATION_ID = "notification-id" ;
     public static String NOTIFICATION = "notification" ;

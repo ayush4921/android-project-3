@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         Button setAlarm = findViewById(R.id.buttonSetAlarm);
         Button deleteAlarm = findViewById(R.id.buttonDeleteAlarm);
         Spinner frequencySpinner = findViewById(R.id.frequencySpinner);
+
         frequencySpinner.setBackgroundColor(Color.WHITE);
 
         List<String> options = new ArrayList<>();
@@ -105,9 +106,11 @@ public class MainActivity extends AppCompatActivity {
         setAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int hour = tp.getHour();
+                int minute = tp.getMinute();
                 // Ensure the calendar is set to the selected date and t
 
-                start_Sensing_new(selectedFrequency, cal);
+                start_Sensing_new(selectedFrequency, cal, hour, minute);
 
                 // Show a toast message to indicate the alarm is set
                 Toast.makeText(MainActivity.this, "Alarm has been updated", Toast.LENGTH_SHORT).show();
@@ -123,13 +126,15 @@ public class MainActivity extends AppCompatActivity {
         });
         }
 
-    public void start_Sensing_new(int frequency, Calendar cal){
+    public void start_Sensing_new(int frequency, Calendar cal, int hour, int minute){
         Log.d("MyActivity", "Alarm On. Frequency = " + frequency);
         long currentTime = cal.getTimeInMillis();
 
         Intent intent = new Intent(this, SendNotification.class);
-        intent.putExtra("frequency", frequency);
+        intent.putExtra("Frequency", frequency);
         intent.putExtra("Calendar", cal);
+        intent.putExtra("Hour", hour);
+        intent.putExtra("Minute", minute);
         PendingIntent pendingIntent = null;
 
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
