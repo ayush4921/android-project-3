@@ -19,6 +19,7 @@
         app:layout_constraintVertical_bias="0.312"
         app:srcCompat="@drawable/_9f7666440ceb4efe41223601648de5d" />
 
+
     <TextView
         android:id="@+id/textViewDuration"
         android:layout_width="129dp"
@@ -54,6 +55,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/timePicker" />
+
+    <Button
+        android:id="@+id/buttonTestNotification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="98dp"
+
+        android:text="Test Notification"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/buttonSetAlarm"

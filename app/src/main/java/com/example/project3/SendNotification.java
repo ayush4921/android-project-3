@@ -12,21 +12,17 @@ import androidx.core.app.NotificationCompat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 public class SendNotification extends BroadcastReceiver {
-    public static final String NOTIFICATION_CHANNEL_ID = "10001";
-    private final static String default_notification_channel_id = "default";
+    public static final String NOTIFICATION_CHANNEL_ID = "12001";
+    private final static String default_notification_channel_id = "default1";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
         int frequency = intent.getIntExtra("frequency", 0);
         long alarmTime = intent.getLongExtra("alarmTime", 0);
-
         String alarmTimeString = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date(alarmTime));
         String contentText = "Alarm triggered at " + alarmTimeString + " with frequency " + frequency + " minutes";
-
         NotificationCompat.Builder builder = getNotificationBuilder(context, contentText);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
