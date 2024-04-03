@@ -92,12 +92,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
-
         CalendarView calView = findViewById(R.id.calendarView);
         calView.setBackgroundColor(Color.WHITE);
         Calendar cal = Calendar.getInstance();
-        long alarmTimeInMillis = cal.getTimeInMillis();
 
         calView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
