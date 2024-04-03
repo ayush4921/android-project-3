@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private int selectedFrequency;
     private static final String PREFS_NAME = "AlarmPrefs";
     private static final String ALARM_TIME_KEY = "alarmTime";
+    private static final String ALARM_FREQUENCY_KEY = "alarmFrequency";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
                 if (position > 0) {
                     String[] parts = selectedFrequencyString.split(" ");
                     selectedFrequency = Integer.parseInt(parts[0]);
+                } else {
+                    selectedFrequency = 0;
                 }
             }
 
@@ -95,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         CalendarView calView = findViewById(R.id.calendarView);
         calView.setBackgroundColor(Color.WHITE);
         Calendar cal = Calendar.getInstance();
@@ -103,67 +105,96 @@ public class MainActivity extends AppCompatActivity {
         calView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                cal.set(year, month, dayOfMonth);     // updating date in calendar
+                cal.set(year, month, dayOfMonth);
             }
         });
 
         setAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (selectedFrequency == 0) {
+                    Toast.makeText(MainActivity.this, "Please select a frequency", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 int hour = tp.getHour();
                 int minute = tp.getMinute();
-                // Ensure the calendar is set to the selected date and time
                 cal.set(Calendar.HOUR_OF_DAY, hour);
                 cal.set(Calendar.MINUTE, minute);
 
+                if (cal.before(Calendar.getInstance())) {
+                    Toast.makeText(MainActivity.this, "Please select a future time", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 startSensing(selectedFrequency, cal);
 
-                // Store alarm time in SharedPreferences
                 SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putLong(ALARM_TIME_KEY, cal.getTimeInMillis());
+                editor.putInt(ALARM_FREQUENCY_KEY, selectedFrequency);
                 editor.apply();
 
-                // Show a toast message to indicate the alarm is set
-                Toast.makeText(MainActivity.this, "Alarm has been updated", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Alarm has been set", Toast.LENGTH_SHORT).show();
             }
         });
 
         deleteAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Remove alarm settings
                 cancelAlarm();
 
-                // Remove alarm time from SharedPreferences
                 SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.remove(ALARM_TIME_KEY);
+                editor.remove(ALARM_FREQUENCY_KEY);
                 editor.apply();
 
-                Toast.makeText(MainActivity.this, "Alarm has been removed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Alarm has been canceled", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Restore previous alarm settings on app restart
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        long alarmTime = prefs.getLong(ALARM_TIME_KEY, 0);
+        int alarmFrequency = prefs.getInt(ALARM_FREQUENCY_KEY, 0);
+
+        if (alarmTime > 0 && alarmFrequency > 0) {
+            Calendar alarmCal = Calendar.getInstance();
+            alarmCal.setTimeInMillis(alarmTime);
+            startSensing(alarmFrequency, alarmCal);
+        }
     }
 
     public void startSensing(int frequency, Calendar cal) {
-        Log.d("MyActivity", "Alarm On. Frequency = " + frequency);
-        long currentTime = cal.getTimeInMillis();
+        Log.d("MyActivity", "Alarm Set. Frequency: " + frequency + ", Time: " + cal.getTime());
+        long alarmTime = cal.getTimeInMillis();
 
         Intent intent = new Intent(this, SendNotification.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        intent.putExtra("frequency", frequency);
+        intent.putExtra("alarmTime", alarmTime);
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, flags);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
         long frequencyMillis = frequency * 60 * 1000;
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, currentTime, frequencyMillis, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarmTime, frequencyMillis, pendingIntent);
     }
 
     private void cancelAlarm() {
         Intent intent = new Intent(this, SendNotification.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, flags);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
+
+        Log.d("MyActivity", "Alarm Canceled");
     }
 }
