@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import android.Manifest;
@@ -232,7 +233,8 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(notificationId, builder.build());
     }
     public void startSensing(int frequency, Calendar cal) {
-        Log.d("MyActivity", "Alarm Set. Frequency: " + frequency + ", Time: " + cal.getTime());
+        Log.d("MainActivity", "startSensing called");
+        Log.d("MainActivity", "Alarm Set. Frequency: " + frequency + ", Time: " + cal.getTime());
         long alarmTime = cal.getTimeInMillis();
 
         Intent intent = new Intent(this, SendNotification.class);
@@ -248,24 +250,34 @@ public class MainActivity extends AppCompatActivity {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             if (alarmManager.canScheduleExactAlarms()) {
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+                Log.d("MainActivity", "Alarm scheduled using setExactAndAllowWhileIdle()");
             } else {
                 // Request permission to schedule exact alarms
                 Intent permissionIntent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
                 startActivity(permissionIntent);
+                Log.d("MainActivity", "Requesting permission to schedule exact alarms");
             }
         } else {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+                Log.d("MainActivity", "Alarm scheduled using setExactAndAllowWhileIdle()");
             } else {
                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pendingIntent);
+                Log.d("MainActivity", "Alarm scheduled using setExact()");
             }
         }
 
         // Schedule the next alarm based on the frequency
         long frequencyMillis = frequency * 60 * 1000;
-        long nextAlarmTime = alarmTime + frequencyMillis;
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextAlarmTime, pendingIntent);
+        long nextAlarmTime = alarmTime;
+        while (nextAlarmTime <= System.currentTimeMillis()) {
+            nextAlarmTime += frequencyMillis;
+        }
+        PendingIntent nextPendingIntent = PendingIntent.getBroadcast(this, 1, intent, flags);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextAlarmTime, nextPendingIntent);
+        Log.d("MainActivity", "Next alarm scheduled for: " + new Date(nextAlarmTime));
     }
+
 
     private void cancelAlarm() {
         Intent intent = new Intent(this, SendNotification.class);

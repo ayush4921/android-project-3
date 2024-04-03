@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -18,6 +19,7 @@ public class SendNotification extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d("SendNotification", "Received alarm broadcast");
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         int frequency = intent.getIntExtra("frequency", 0);
         long alarmTime = intent.getLongExtra("alarmTime", 0);
@@ -26,6 +28,7 @@ public class SendNotification extends BroadcastReceiver {
         NotificationCompat.Builder builder = getNotificationBuilder(context, contentText);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            Log.d("SendNotification", "Notification channel created");
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "NOTIFICATION_CHANNEL_NAME", importance);
             notificationManager.createNotificationChannel(notificationChannel);
@@ -34,6 +37,8 @@ public class SendNotification extends BroadcastReceiver {
 
         int notificationId = (int) System.currentTimeMillis();
         notificationManager.notify(notificationId, builder.build());
+
+        Log.d("SendNotification", "Notification displayed");
     }
 
     private NotificationCompat.Builder getNotificationBuilder(Context context, String content) {
